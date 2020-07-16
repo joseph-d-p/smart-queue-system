@@ -13,22 +13,26 @@ def main(args):
     device=args.device
     video_file=args.video
     max_people=args.max_people
+    queue_param=args.queue_param
     threshold=args.threshold
     output_path=args.output_path
 
     start_model_load_time=time.time()
-    pd= PersonDetect(model, device, threshold)
+    pd = PersonDetect(model, device, threshold)
     pd.load_model()
     total_model_load_time = time.time() - start_model_load_time
 
     queue=Queue()
 
+    """
     try:
         queue_param=np.load(args.queue_param)
         for q in queue_param:
             queue.add_queue(q)
-    except:
+    except Exception as e:
+        print(e)
         print("error loading queue param file")
+    """
 
     try:
         cap=cv2.VideoCapture(video_file)
@@ -41,7 +45,13 @@ def main(args):
     initial_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     video_len = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     fps = int(cap.get(cv2.CAP_PROP_FPS))
-    out_video = cv2.VideoWriter(os.path.join(output_path, 'output_video.mp4'), cv2.VideoWriter_fourcc(*'avc1'), fps, (initial_w, initial_h), True)
+
+    out_video = cv2.VideoWriter(
+        os.path.join(output_path, 'output_video.mp4'),
+        cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
+        fps,
+        (initial_w, initial_h),
+        True)
 
     counter=0
     start_inference_time=time.time()
@@ -57,6 +67,7 @@ def main(args):
             num_people= queue.check_coords(coords)
             print(f"Total People in frame = {len(coords)}")
             print(f"Number of people in queue = {num_people}")
+            sys.stdout.flush()
             out_text=""
             y_pixel=25
 
@@ -88,11 +99,10 @@ if __name__=='__main__':
     parser.add_argument('--model', required=True)
     parser.add_argument('--device', default='CPU')
     parser.add_argument('--video', default=None)
-    parser.add_argument('--queue_param', default=None)
-    parser.add_argument('--output_path', default='/results')
-    parser.add_argument('--max_people', default=2)
-    parser.add_argument('--threshold', default=0.60)
+    parser.add_argument('--max_people', default=None)
+    parser.add_argument('--queue_param', default="")
+    parser.add_argument('--threshold', default=0.6)
+    parser.add_argument('--output_path', default='results')
 
     args=parser.parse_args()
-
     main(args)
