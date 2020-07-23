@@ -12,9 +12,9 @@ def main(args):
     model=args.model
     device=args.device
     video_file=args.video
-    max_people=args.max_people
+    max_people=int(args.max_people)
     queue_param=args.queue_param
-    threshold=args.threshold
+    threshold=float(args.threshold)
     output_path=args.output_path
 
     start_model_load_time=time.time()
