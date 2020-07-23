@@ -53,6 +53,7 @@ def main(args):
         (initial_w, initial_h),
         True)
 
+    cv2.namedWindow("output")
     counter=0
     start_inference_time=time.time()
 
@@ -78,7 +79,12 @@ def main(args):
                 cv2.putText(image, out_text, (15, y_pixel), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 2)
                 out_text=""
                 y_pixel+=40
+
+            cv2.imshow("output", image)
             out_video.write(image)
+
+            if cv2.waitKey(25) & 0xFF == ord('q'):
+                break
 
         total_time=time.time()-start_inference_time
         total_inference_time=round(total_time, 1)
