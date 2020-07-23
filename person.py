@@ -33,23 +33,26 @@ class PersonDetect:
         self.core.add_extension(extension_path=CPU_EXTENSION, device_name='CPU')
         self.exec_net = self.core.load_network(network=self.net, device_name=self.device, num_requests=1)
 
-    def predict(self, image):
-        image = self.preprocess_input(image)
-        result = self.exec_net.infer({ self.input_name: image })
+    def predict(self, image, width, height):
+        output = self.preprocess_input(image)
+        result = self.exec_net.infer({ self.input_name: output })
         coords = self.preprocess_outputs(result);
-        image = self.draw_outputs(coords, image)
-
+        image = self.draw_outputs(coords, image, width, height)
         return coords, image
 
-    def draw_outputs(self, coords, image):
+    def draw_outputs(self, coords, image, width, height):
         for coord in coords[0][0]:
             if coord[2] >= self.threshold:
-                x_min = int(coord[3])
-                y_min = int(coord[4])
-                x_max = int(coord[5])
-                y_max = int(coord[6])
+                x_min = int(coord[3] * width)
+                y_min = int(coord[4] * height)
+                x_max = int(coord[5] * width)
+                y_max = int(coord[6] * height)
 
-            image = cv2.rectangle(image, (x_min, x_max), (y_min, y_max), (255, 0, 0), 1)
+            image = cv2.rectangle(image,
+                                  (x_min, y_min),
+                                  (x_max, y_max),
+                                  (255, 0, 0),
+                                  1)
 
         return image
 
