@@ -64,8 +64,15 @@ def main(args):
                 break
             counter+=1
 
-            coords, image= pd.predict(frame, initial_w, initial_h)
-            num_people= queue.check_coords(coords)
+
+            num_people = {}
+            queues = queue.get_queues(frame)
+            for image in queues:
+                height, width, _ = image.shape
+                coords = pd.predict(image, width, height)
+                num_people = queue.check_coords(coords)
+                frame = pd.draw_outputs(coords, frame)
+
             print(f"Total People in frame = {len(coords)}")
             print(f"Number of people in queue = {num_people}")
             sys.stdout.flush()
