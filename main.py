@@ -81,14 +81,14 @@ def main(args):
 
             for k, v in num_people.items():
                 out_text += f"No. of People in Queue {k} is {v} "
-                if v >= int(max_people):
+                if v >= max_people:
                     out_text += f" Queue full; Please move to next Queue "
-                cv2.putText(image, out_text, (15, y_pixel), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 2)
+                cv2.putText(frame, out_text, (15, y_pixel), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 2)
                 out_text=""
                 y_pixel+=40
 
-            cv2.imshow("output", image)
-            out_video.write(image)
+            cv2.imshow("output", frame)
+            out_video.write(frame)
 
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 break
