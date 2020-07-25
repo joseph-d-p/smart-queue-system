@@ -8,6 +8,20 @@ import sys
 from queue import Queue
 from person import PersonDetect
 
+VIEW_QUEUE = False
+
+def view_queues(frame, queue_param):
+    queues = np.load(queue_param)
+    for queue in queues:
+        x_min, y_min, x_max, y_max = queue
+        frame = cv2.rectangle(frame,
+                         (x_min, y_min),
+                         (x_max, y_max),
+                         (0, 255, 0),
+                         2)
+
+    return frame
+
 def main(args):
     model=args.model
     device=args.device
@@ -24,7 +38,6 @@ def main(args):
 
     queue=Queue()
 
-    """
     try:
         queue_param=np.load(args.queue_param)
         for q in queue_param:
@@ -32,7 +45,6 @@ def main(args):
     except Exception as e:
         print(e)
         print("error loading queue param file")
-    """
 
     try:
         cap=cv2.VideoCapture(video_file)
@@ -64,6 +76,8 @@ def main(args):
                 break
             counter+=1
 
+            if VIEW_QUEUE:
+                frame = view_queues(frame, args.queue_param)
 
             num_people = {}
             queues = queue.get_queues(frame)
