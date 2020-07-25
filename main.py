@@ -80,10 +80,9 @@ def main(args):
                 frame = view_queues(frame, args.queue_param)
 
             num_people = {}
+            coords = pd.predict(frame, initial_w, initial_h)
             queues = queue.get_queues(frame)
-            for image in queues:
-                height, width, _ = image.shape
-                coords = pd.predict(image, width, height)
+            for _ in queues:
                 num_people = queue.check_coords(coords)
                 frame = pd.draw_outputs(coords, frame)
 
