@@ -36,18 +36,13 @@ class PersonDetect:
     def predict(self, image, width, height):
         output = self.preprocess_input(image)
         result = self.exec_net.infer({ self.input_name: output })
-        coords = self.preprocess_outputs(result);
-        image = self.draw_outputs(coords, image, width, height)
-        return coords, image
+        coords = self.preprocess_outputs(result, width, height);
 
-    def draw_outputs(self, coords, image, width, height):
-        for coord in coords[0][0]:
-            if coord[2] >= self.threshold:
-                x_min = int(coord[3] * width)
-                y_min = int(coord[4] * height)
-                x_max = int(coord[5] * width)
-                y_max = int(coord[6] * height)
+        return coords
 
+    def draw_outputs(self, coords, image):
+        for coord in coords:
+            x_min, y_min, x_max, y_max = coord
             image = cv2.rectangle(image,
                                   (x_min, y_min),
                                   (x_max, y_max),
@@ -56,8 +51,18 @@ class PersonDetect:
 
         return image
 
-    def preprocess_outputs(self, outputs):
-        return outputs[self.output_name];
+    def preprocess_outputs(self, outputs, width, height):
+        coords = outputs[self.output_name]
+        persons = []
+        for coord in coords[0][0]:
+            if coord[2] >= self.threshold:
+                x_min = int(coord[3] * width)
+                y_min = int(coord[4] * height)
+                x_max = int(coord[5] * width)
+                y_max = int(coord[6] * height)
+                persons.append([x_min, y_min, x_max, y_max])
+
+        return persons
 
     def preprocess_input(self, image):
         *_, height, width = self.input_shape
