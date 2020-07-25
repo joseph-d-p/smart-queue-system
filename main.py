@@ -8,6 +8,20 @@ import sys
 from queue import Queue
 from person import PersonDetect
 
+VIEW_QUEUE = False
+
+def view_queues(frame, queue_param):
+    queues = np.load(queue_param)
+    for queue in queues:
+        x_min, y_min, x_max, y_max = queue
+        frame = cv2.rectangle(frame,
+                         (x_min, y_min),
+                         (x_max, y_max),
+                         (0, 255, 0),
+                         2)
+
+    return frame
+
 def main(args):
     model=args.model
     device=args.device
@@ -24,7 +38,6 @@ def main(args):
 
     queue=Queue()
 
-    """
     try:
         queue_param=np.load(args.queue_param)
         for q in queue_param:
@@ -32,7 +45,6 @@ def main(args):
     except Exception as e:
         print(e)
         print("error loading queue param file")
-    """
 
     try:
         cap=cv2.VideoCapture(video_file)
@@ -64,8 +76,16 @@ def main(args):
                 break
             counter+=1
 
-            coords, image= pd.predict(frame, initial_w, initial_h)
-            num_people= queue.check_coords(coords)
+            if VIEW_QUEUE:
+                frame = view_queues(frame, args.queue_param)
+
+            num_people = {}
+            coords = pd.predict(frame, initial_w, initial_h)
+            queues = queue.get_queues(frame)
+            for _ in queues:
+                num_people = queue.check_coords(coords)
+                frame = pd.draw_outputs(coords, frame)
+
             print(f"Total People in frame = {len(coords)}")
             print(f"Number of people in queue = {num_people}")
             sys.stdout.flush()
@@ -74,14 +94,14 @@ def main(args):
 
             for k, v in num_people.items():
                 out_text += f"No. of People in Queue {k} is {v} "
-                if v >= int(max_people):
+                if v >= max_people:
                     out_text += f" Queue full; Please move to next Queue "
-                cv2.putText(image, out_text, (15, y_pixel), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 2)
+                cv2.putText(frame, out_text, (15, y_pixel), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 2)
                 out_text=""
                 y_pixel+=40
 
-            cv2.imshow("output", image)
-            out_video.write(image)
+            cv2.imshow("output", frame)
+            out_video.write(frame)
 
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 break
