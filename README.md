@@ -39,7 +39,19 @@ $ python3 main.py \
 
 ## Output
 
-Manufacturing Video: [Download](https://github.com/joseph-d-p/smart-queue-system/tree/master/results/manufacturing/output_video.mp4)
+### Manufacturing Scenario
+
+Predict person location in frame to see if the production line is well-supported.
 
 [![Watch the video](http://i3.ytimg.com/vi/OUEe3H4EjVk/hqdefault.jpg)](https://youtu.be/OUEe3H4EjVk)
+
+Video: [Download](https://github.com/joseph-d-p/smart-queue-system/tree/master/results/manufacturing/output_video.mp4)
+
+### Retail Scenario
+Detect number of customers in queue and be able to redirect customer/s to less congested queues.
+
+[![Watch the video](http://i3.ytimg.com/vi/pbHpxR9Yk_8/hqdefault.jpg)](https://www.youtube.com/watch?v=pbHpxR9Yk_8)
+
+Video: [Download](https://github.com/joseph-d-p/smart-queue-system/tree/master/results/retail/output_video.mp4)
+
 
